@@ -2,16 +2,21 @@ import React, { useState } from "react";
 import usePasswordGen from "./PasswordGen";
 import "./index.css";
 
-const App = () => {
+function App() {
   const [passwordLength, setPasswordLength] = useState(4);
+  const [copyButtonText, setCopyButtonText] = useState("Copy");
   const passwordGen = usePasswordGen();
 
   const handleCopyToClipboard = async () => {
-    if (!passwordGen.password) return;
-
     try {
-      await navigator.clipboard.writeText(passwordGen.password);
-      passwordGen.clearPassword();
+      if (passwordGen.password) {
+        await navigator.clipboard.writeText(passwordGen.password);
+        setCopyButtonText("Copied");
+        passwordGen.clearPassword();
+        setTimeout(() => {
+          setCopyButtonText("Copy");
+        }, 3000);
+      }
     } catch (error) {
       console.error("Clipboard copy error:", error);
     }
@@ -25,7 +30,12 @@ const App = () => {
     passwordGen.generatePassword(passwordLength);
   };
 
-  const getPasswordStrength = () => (passwordLength < 6 ? "Weak" : "Strong");
+  const getPasswordStrength = () => {
+    if (passwordLength < 6) {
+      return "Weak";
+    }
+    return "Strong";
+  };
 
   return (
     <div className="App">
@@ -37,20 +47,23 @@ const App = () => {
             value={passwordGen.password}
             readOnly
             className="generatedPasswordInput"
+            onChange={() => {}}
           />
           <button className="copyBtn" onClick={handleCopyToClipboard}>
-            {passwordGen.password ? "Copied" : "Copy"}
+            {copyButtonText}
           </button>
 
           <div className="passwordLength">
             <span className="passwordStrength">
               Password Strength:{" "}
-              <span className={getPasswordStrength().toLowerCase()}>
+              <span
+                className={getPasswordStrength() === "Weak" ? "weak" : "strong"}
+              >
                 {getPasswordStrength()}
               </span>
             </span>
             <span>
-              <label>Password Length:</label>
+              <label>Password Length: </label>
               <label className="passwordLengthLabel">{passwordLength}</label>
             </span>
             <input
@@ -80,6 +93,6 @@ const App = () => {
       </div>
     </div>
   );
-};
+}
 
 export default App;
