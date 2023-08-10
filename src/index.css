@@ -95,9 +95,8 @@ button {
 }
 
 .generateBtn:hover {
-  /* Removed space before :hover */
   color: darkgreen;
-  transition: 0.5s ease-in; /* Added 's' after 0.5 for seconds */
+  transition: 0.5s ease-in; 
   background-color: black;
 }
 
